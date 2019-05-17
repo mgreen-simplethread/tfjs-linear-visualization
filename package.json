@@ -1,0 +1,22 @@
+{
+  "name": "tensorflow-js",
+  "private": true,
+  "version": "0.1.0",
+  "author": "Mike Green <mike.green@simplethread.com>",
+  "dependencies": {
+    "@tensorflow/tfjs": "^1.1.2",
+    "@tensorflow/tfjs-node": "^1.1.2",
+    "@tensorflow/tfjs-vis": "^1.1.0",
+    "classnames": "^2.2.6",
+    "prop-types": "^15.7.2",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "react-vis": "^1.11.7"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.4.4",
+    "@babel/plugin-proposal-class-properties": "^7.4.4",
+    "@babel/preset-env": "^7.4.4",
+    "@babel/preset-react": "^7.0.0"
+  }
+}
