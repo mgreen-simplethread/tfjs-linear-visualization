@@ -34,7 +34,7 @@ export default function Visualization({ trainingPoints, predictedPoints, lineEqu
         </thead>
         <tbody>
           {predictedPoints.map(({ x, y }) => (
-            <tr>
+            <tr key={`${x},${y}`}>
               <td>{x}</td>
               <td>{y}</td>
               <td>{lineEquation(x)}</td>

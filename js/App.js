@@ -27,14 +27,36 @@ class App extends Component {
     this.setState({ [name]: intValue });
   };
 
+  linearTrainingPoints() {
+    const { xValues } = this;
+    const points = xValues.map((x) => ({ x, y: this.lineEquation(x) }));
+    console.log('Linear training points: %O', points);
+    return points;
+  }
+
   trainingSubmit = (evt) => {
     evt.preventDefault();
+    const trainingPoints = this.linearTrainingPoints();
+    this.setState({ trainingPoints });
     this.retrainModel();
   };
 
+  setTrainingPoints = (evt) => {
+    evt.preventDefault();
+    const trainingPoints = this.parseCSV(this.state.rawPoints);
+    this.setState({ trainingPoints });
+    this.retrainModel();
+  };
+
+  parseCSV = (str) =>
+    str.split('\n').map((s) => {
+      const [x, y] = s.split(',', 2).map((n) => parseInt(n, 10));
+      return { x, y };
+    });
+
   predictSubmit = (evt) => {
     evt.preventDefault();
-    const prediction = this.model.predict(tensor2d([this.state.xValue])).arraySync();
+    const prediction = this.model.predict(tensor2d([this.state.xValue])).arraySync()[0][0];
     const predictedPoints = [...this.state.predictedPoints, { x: this.state.xValue, y: prediction }];
     const trainingPoints = [
       ...this.state.trainingPoints,
@@ -45,7 +67,8 @@ class App extends Component {
   };
 
   componentDidMount() {
-    this.retrainModel();
+    const trainingPoints = this.linearTrainingPoints();
+    this.setState({ trainingPoints }, () => this.retrainModel());
   }
 
   render() {
@@ -109,20 +132,23 @@ class App extends Component {
   }
 
   async retrainModel() {
-    const xValues = this.xValues;
-    const yValues = this.yValues;
+    let xValues = [],
+      yValues = [];
+
+    for (const { x, y } of this.state.trainingPoints) {
+      xValues.push(x);
+      yValues.push(y);
+    }
+
+    console.log('Train with X values: %O, Y values: %O', xValues, yValues);
+
     const xs = tensor2d(xValues);
     const ys = tensor2d(yValues);
-    const trainingPoints = xValues.map((x) => ({ x, y: this.lineEquation(x) }));
 
     console.log('Retrain model');
-    console.log('X values: %O', xValues);
-    console.log('Y values: %O', yValues);
 
-    this.setState({ training: true, trainingPoints, predictedPoints: [] });
-
+    this.setState({ training: true, predictedPoints: [] });
     this.model = makeModel();
-
     await this.model.fit(xs, ys, { epochs: this.state.epochs });
     this.setState({ training: false });
   }

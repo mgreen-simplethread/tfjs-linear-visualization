@@ -1,44 +1,76 @@
 import React from 'react';
 import { func, number, bool } from 'prop-types';
-import Field from './Field';
+import { Tabs, Tab, TabList, TabPanel } from 'react-tabs';
+import { Field, TextArea } from './Field';
 
-export default function TrainingForm({ onSubmit, onChange, xMultiplier, yIntercept, startX, endX, epochs, training }) {
+import 'react-tabs/style/react-tabs.css';
+
+export default function TrainingForm({
+  onSubmit,
+  onChange,
+  xMultiplier,
+  yIntercept,
+  startX,
+  endX,
+  epochs,
+  training,
+  rawPoints,
+  setTrainingPoints,
+}) {
   return (
     <section className="training">
       <h2 className="section-header">Training</h2>
 
-      <form onSubmit={onSubmit} className="training-form">
-        <Field
-          label="X-Multiplier"
-          id="x-multiplier"
-          name="xMultiplier"
-          type="number"
-          value={xMultiplier}
-          onChange={onChange}
-        />
-        <Field
-          label="Y-Intercept"
-          id="y-intercept"
-          name="yIntercept"
-          type="number"
-          value={yIntercept}
-          onChange={onChange}
-        />
-        <Field label="Start X" id="start-x" name="startX" type="number" value={startX} onChange={onChange} />
-        <Field label="End X" id="end-x" name="endX" type="number" value={endX} onChange={onChange} />
-        <Field
-          label="Epochs (training iterations)"
-          id="epochs"
-          name="epochs"
-          type="number"
-          value={epochs}
-          onChange={onChange}
-        />
+      <Tabs>
+        <TabList>
+          <Tab>Linear Equation</Tab>
+          <Tab>Arbitrary Points</Tab>
+        </TabList>
 
-        <button type="submit" disabled={training}>
-          Train Neural Network
-        </button>
-      </form>
+        <TabPanel>
+          <form onSubmit={onSubmit} className="training-form">
+            <Field
+              label="X-Multiplier"
+              id="x-multiplier"
+              name="xMultiplier"
+              type="number"
+              value={xMultiplier}
+              onChange={onChange}
+            />
+            <Field
+              label="Y-Intercept"
+              id="y-intercept"
+              name="yIntercept"
+              type="number"
+              value={yIntercept}
+              onChange={onChange}
+            />
+            <Field label="Start X" id="start-x" name="startX" type="number" value={startX} onChange={onChange} />
+            <Field label="End X" id="end-x" name="endX" type="number" value={endX} onChange={onChange} />
+            <Field
+              label="Epochs (training iterations)"
+              id="epochs"
+              name="epochs"
+              type="number"
+              value={epochs}
+              onChange={onChange}
+            />
+
+            <button type="submit" disabled={training}>
+              Train Neural Network
+            </button>
+          </form>
+        </TabPanel>
+
+        <TabPanel>
+          <form onSubmit={setTrainingPoints} className="training-form">
+            <TextArea id="training-points" name="rawPoints" value={rawPoints} onChange={onChange} />
+            <button type="submit" disabled={training}>
+              Train Neural Network
+            </button>
+          </form>
+        </TabPanel>
+      </Tabs>
     </section>
   );
 }
