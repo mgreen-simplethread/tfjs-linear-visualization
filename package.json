@@ -4,7 +4,8 @@
   "version": "0.1.0",
   "author": "Mike Green <mike.green@simplethread.com>",
   "scripts": {
-    "start": "parcel ./index.html"
+    "start": "parcel ./index.html",
+    "build": "parcel build --out-dir dist --public-url '/tfjs-linear-visualization/' ./index.html"
   },
   "dependencies": {
     "@tensorflow/tfjs": "^1.1.2",
