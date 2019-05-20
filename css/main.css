@@ -56,7 +56,7 @@ body {
 }
 
 .visualization {
-  grid-area: visualization:
+  grid-area: visualization;
   grid-row-start: span 2;
 }
 
