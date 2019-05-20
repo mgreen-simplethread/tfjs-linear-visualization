@@ -27,7 +27,7 @@ body {
     "header header"
     "status status"
     "training visualization"
-    "prediction visualization";
+    "prediction history";
 }
 
 .card__header {
@@ -57,7 +57,22 @@ body {
 
 .visualization {
   grid-area: visualization;
-  grid-row-start: span 2;
+}
+
+.prediction-history {
+  grid-area: history;
+}
+
+.predictions {
+  width: 100%;
+}
+
+.predictions thead th {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.predictions th, .predictions td {
+  text-align: center;
 }
 
 .field {
@@ -72,6 +87,12 @@ body {
   font-size: var(--base-size);
   padding: 5px 10px;
   max-width: 400px;
+}
+
+.field textarea {
+  width: 100%;
+  height: 450px;
+  font-size: var(--base-size);
 }
 
 .field label {

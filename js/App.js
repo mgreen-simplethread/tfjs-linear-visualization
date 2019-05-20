@@ -1,3 +1,4 @@
+import math from 'mathjs';
 import React, { Component } from 'react';
 import classnames from 'classnames';
 import { makeModel, tensor2d } from './lib/model';
@@ -5,6 +6,7 @@ import { range } from './lib/range';
 import TrainingForm from './TrainingForm';
 import PredictionForm from './PredictionForm';
 import Visualization from './Visualization';
+import History from './History';
 
 class App extends Component {
   state = {
@@ -16,27 +18,44 @@ class App extends Component {
     training: false,
     xValue: null,
     prediction: null,
+    rawPoints: '',
     trainingPoints: [],
     predictedPoints: [],
+    equation: '2 * x - 1',
   };
 
-  lineEquation = (x) => this.state.xMultiplier * x + this.state.yIntercept;
+  equationParser() {
+    const parser = math.parser();
+    parser.eval(`f(x) = ${this.state.equation}`);
+    return parser;
+  }
 
-  onChange = ({ target: { name, value } }) => {
-    const intValue = parseInt(value, 10);
-    this.setState({ [name]: intValue });
+  solveEquation = (x) => this.equationParser().eval(`f(${x})`);
+
+  onChange = ({ target: { name, value, type } }) => {
+    console.log('change event: %s, %s', name, value);
+
+    if (type === 'number') return this.setState({ [name]: parseInt(value, 10) });
+
+    this.setState({ [name]: value });
   };
 
-  linearTrainingPoints() {
-    const { xValues } = this;
-    const points = xValues.map((x) => ({ x, y: this.lineEquation(x) }));
-    console.log('Linear training points: %O', points);
-    return points;
+  plotEquationPoints() {
+    try {
+      const equation = this.equationParser();
+      const { xValues } = this;
+      const points = xValues.map((x) => ({ x, y: equation.eval(`f(${x})`) }));
+      console.log('Equation point: %O', points);
+      return points;
+    } catch (err) {
+      console.warn('error plotting equation points: %O', err);
+      return [];
+    }
   }
 
   trainingSubmit = (evt) => {
     evt.preventDefault();
-    const trainingPoints = this.linearTrainingPoints();
+    const trainingPoints = this.plotEquationPoints();
     this.setState({ trainingPoints });
     this.retrainModel();
   };
@@ -60,14 +79,14 @@ class App extends Component {
     const predictedPoints = [...this.state.predictedPoints, { x: this.state.xValue, y: prediction }];
     const trainingPoints = [
       ...this.state.trainingPoints,
-      { x: this.state.xValue, y: this.lineEquation(this.state.xValue) },
+      { x: this.state.xValue, y: this.solveEquation(this.state.xValue) },
     ];
     console.log('Prediction: %O', prediction);
     this.setState({ prediction, predictedPoints, trainingPoints });
   };
 
   componentDidMount() {
-    const trainingPoints = this.linearTrainingPoints();
+    const trainingPoints = this.plotEquationPoints();
     this.setState({ trainingPoints }, () => this.retrainModel());
   }
 
@@ -82,16 +101,13 @@ class App extends Component {
           <p>
             <strong>Status:</strong> {this.state.training ? 'Training Model' : 'Model Trained'}
           </p>
-          <p>
-            <strong>Line Equation:</strong> <code>{this.formatEquation()}</code>
-          </p>
         </section>
 
         <TrainingForm
           onSubmit={this.trainingSubmit}
+          setTrainingPoints={this.setTrainingPoints}
           onChange={this.onChange}
-          xMultiplier={this.state.xMultiplier}
-          yIntercept={this.state.yIntercept}
+          equation={this.state.equation}
           startX={this.state.startX}
           endX={this.state.endX}
           epochs={this.state.epochs}
@@ -109,8 +125,10 @@ class App extends Component {
         <Visualization
           trainingPoints={this.state.trainingPoints}
           predictedPoints={this.state.predictedPoints}
-          lineEquation={this.lineEquation}
+          lineEquation={this.solveEquation}
         />
+
+        <History lineEquation={this.solveEquation} predictedPoints={this.state.predictedPoints} />
       </div>
     );
   }
@@ -125,7 +143,7 @@ class App extends Component {
         </p>
         <p>
           <strong>Actual Y Value:</strong>
-          {this.lineEquation(this.state.xValue)}
+          {this.solveEquation(this.state.xValue)}
         </p>
       </div>
     );
@@ -155,10 +173,6 @@ class App extends Component {
 
   get xValues() {
     return range(this.state.startX, this.state.endX);
-  }
-
-  get yValues() {
-    return this.xValues.map(this.lineEquation);
   }
 
   formatEquation() {

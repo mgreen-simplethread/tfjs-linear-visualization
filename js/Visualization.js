@@ -1,47 +1,42 @@
 import React from 'react';
 import 'react-vis/dist/style.css';
 import {
-  FlexibleXYPlot,
+  FlexibleWidthXYPlot,
   XAxis,
   YAxis,
   MarkSeries,
+  DiscreteColorLegend,
+  LineMarkSeries,
   LineSeries,
   VerticalGridLines,
   HorizontalGridLines,
 } from 'react-vis';
 
 export default function Visualization({ trainingPoints, predictedPoints, lineEquation }) {
+  const series = [
+    {
+      title: 'Training Data',
+      color: 'red',
+    },
+    {
+      title: 'Predictions',
+      color: 'black',
+    },
+  ];
+
   return (
     <section className="visualization">
       <h2 className="section-header">Visualization</h2>
 
-      <FlexibleXYPlot>
+      <FlexibleWidthXYPlot height={400}>
+        <DiscreteColorLegend items={series} orientation="horizontal" />
         <XAxis />
         <YAxis />
         <HorizontalGridLines />
         <VerticalGridLines />
-        <LineSeries data={trainingPoints} color="red" />
-        <MarkSeries color="black" data={predictedPoints} />
-      </FlexibleXYPlot>
-
-      <table className="prediction-history">
-        <thead>
-          <tr>
-            <th>X Value</th>
-            <th>Predicted Y</th>
-            <th>Actual Y</th>
-          </tr>
-        </thead>
-        <tbody>
-          {predictedPoints.map(({ x, y }) => (
-            <tr key={`${x},${y}`}>
-              <td>{x}</td>
-              <td>{y}</td>
-              <td>{lineEquation(x)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+        <LineMarkSeries data={trainingPoints} color={series[0].color} />
+        <MarkSeries color={series[1].color} data={predictedPoints} />
+      </FlexibleWidthXYPlot>
     </section>
   );
 }

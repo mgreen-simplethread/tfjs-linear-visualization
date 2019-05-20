@@ -8,8 +8,7 @@ import 'react-tabs/style/react-tabs.css';
 export default function TrainingForm({
   onSubmit,
   onChange,
-  xMultiplier,
-  yIntercept,
+  equation,
   startX,
   endX,
   epochs,
@@ -30,19 +29,11 @@ export default function TrainingForm({
         <TabPanel>
           <form onSubmit={onSubmit} className="training-form">
             <Field
-              label="X-Multiplier"
-              id="x-multiplier"
-              name="xMultiplier"
-              type="number"
-              value={xMultiplier}
-              onChange={onChange}
-            />
-            <Field
-              label="Y-Intercept"
-              id="y-intercept"
-              name="yIntercept"
-              type="number"
-              value={yIntercept}
+              label="Equation to Plot"
+              id="equation"
+              name="equation"
+              type="text"
+              value={equation}
               onChange={onChange}
             />
             <Field label="Start X" id="start-x" name="startX" type="number" value={startX} onChange={onChange} />
